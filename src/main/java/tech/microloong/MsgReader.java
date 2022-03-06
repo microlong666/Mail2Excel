@@ -27,6 +27,11 @@ public class MsgReader {
     final static String WINDOWS_PATH = "D:";
     final static String MAC_PATH = ".";
 
+    /**
+     * 读取 MSG 文件名和内容
+     * @param path 文件路径
+     * @return 数据列表
+     */
     private ArrayList<Map<String, String>> readMessage(String path) {
         // message
         ArrayList<Map<String, String>> messageList = new ArrayList<>();
@@ -68,6 +73,11 @@ public class MsgReader {
         return messageList;
     }
 
+    /**
+     * Excel 导出
+     * @param messageList 数据列表
+     * @param path 文件路径
+     */
     private void convertToExcel(ArrayList<Map<String, String>> messageList, String path) {
         // 判断目录是否存在
         File dir = new File(path + "/mail/excel");
