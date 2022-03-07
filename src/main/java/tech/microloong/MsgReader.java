@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.simplejavamail.outlookmessageparser.OutlookMessageParser;
 import org.simplejavamail.outlookmessageparser.model.OutlookMessage;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -36,35 +37,32 @@ public class MsgReader {
         // message
         ArrayList<Map<String, String>> messageList = new ArrayList<>();
         File file = new File(path + "/mail/msg");
-        if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (files != null) {
-                try {
-                    for (File temp : files) {
-                        OutlookMessageParser parser = new OutlookMessageParser();
-                        OutlookMessage message = parser.parseMsg(temp);
-                        String time = StrUtil.subBetween(message.getBodyText(), "With effect from ", ",");
-                        Map<String, String> map = new LinkedHashMap<>(4);
-                        map.put("TIME", time);
-                        // 获取文件名
-                        String fileName = temp.getName();
-                        // 前半部分
-                        String[] frontPart = fileName.split("_");
-                        map.put("NAME", frontPart[1].trim());
-                        map.put("ID", frontPart[2].trim());
-                        // 后半部分
-                        String[] backPart = frontPart[3].split("-");
-                        map.put("CERTIFICATE", backPart[0].trim());
-                        // 末尾部分
-                        String[] endPart = fileName.split("-");
-                        map.put("CONTENT", StrUtil.removeSuffix(endPart[1], ".msg").trim().replace("_", "/"));
-                        // append 到数组中
-                        messageList.add(map);
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
+        File[] files = file.listFiles();
+        try {
+            for (File temp : files) {
+                OutlookMessageParser parser = new OutlookMessageParser();
+                OutlookMessage message = parser.parseMsg(temp);
+                String time = StrUtil.subBetween(message.getBodyText(), "With effect from ", ",");
+                Map<String, String> map = new LinkedHashMap<>(4);
+                map.put("TIME", time);
+                // 获取文件名
+                String fileName = temp.getName();
+                // 前半部分
+                String[] frontPart = fileName.split("_");
+                map.put("NAME", frontPart[1].trim());
+                map.put("ID", frontPart[2].trim());
+                // 后半部分
+                String[] backPart = frontPart[3].split("-");
+                map.put("CERTIFICATE", backPart[0].trim());
+                // 末尾部分
+                String[] endPart = fileName.split("-");
+                map.put("CONTENT", StrUtil.removeSuffix(endPart[1], ".msg").trim().replace("_", "/"));
+                // append 到数组中
+                messageList.add(map);
             }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "请检查文件目录或文件并重试！", "出错", JOptionPane.WARNING_MESSAGE);
+            System.exit(1);
         }
         // 按 NAME 排序
         messageList.sort(Comparator.comparing(o -> o.get("NAME")));
@@ -105,10 +103,11 @@ public class MsgReader {
         // 关闭writer，释放内存
         writer.close();
         System.out.println("输出完成，请查看文件");
+        JOptionPane.showMessageDialog(null, "输出完成，请查看文件", "成功", JOptionPane.INFORMATION_MESSAGE );
         try {
             Desktop.getDesktop().open(new File(path + "/mail/excel"));
         } catch (IOException e) {
-            System.out.println("尝试打开文件夹失败，请手动操作");
+            JOptionPane.showMessageDialog(null, "尝试打开文件夹失败，请手动操作", "出错", JOptionPane.WARNING_MESSAGE);
         }
     }
 
