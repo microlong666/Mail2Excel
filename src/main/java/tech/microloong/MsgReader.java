@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class MsgReader {
 
-    final static String WINDOWS_PATH = "D:";
+    final static String WINDOWS_PATH = "C:/Users/" + System.getProperty("user.name");
     final static String MAC_PATH = ".";
 
     /**
